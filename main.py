@@ -1,16 +1,47 @@
-# This is a sample Python script.
+from flask import Flask, render_template, url_for, flash ,redirect
+from forms import RegistrationForm, LoginForm
 
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+app = Flask(__name__)
+
+app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+
+posts = [
+    {
+        'author': 'Corey Schafer',
+        'title': 'Blog Post 1',
+        'content': 'First post content',
+        'date_posted': 'April 10, 2023'
+    },
+    {
+        'author': 'Jane Doe',
+        'title': 'Blog Post 2',
+        'content': 'Second post content',
+        'date_posted': 'April 12, 2023'
+    }
+]
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Strg+F8 to toggle the breakpoint.
+@app.route("/")
+@app.route("/home")
+def home():
+    return render_template('home.html', posts=posts)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.route("/about")
+def about():
+    return render_template('About.html', title='About')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account created for {form.username.data}!', 'success')
+        return redirect(url_for('home'))
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route("/login")
+def login():
+    form = LoginForm()
+    return render_template('register.html', title='Register', form=form)
